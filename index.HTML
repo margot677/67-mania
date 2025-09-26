@@ -3,42 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Margoat's Profile</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 min-h-screen font-sans">
+  <title>Margoat’s Profile</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background-color: #d8efff; /* pastel blue background */
+      color: #2b2b2b;
+    }
 
-  <!-- Header Section -->
-  <header class="flex items-center p-6">
-    <img src="profile.jpg" alt="Profile Picture"
-         class="w-20 h-20 rounded-full border-4 border-pink-300 shadow-lg">
-    <h1 class="ml-4 text-3xl font-bold text-gray-700">Margoat</h1>
+    header {
+      display: flex;
+      align-items: center;
+      background-color: #b5dcf5; /* slightly darker pastel blue */
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    header img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid white;
+      margin-right: 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      color: #444;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #3b82c4;
+      border-bottom: 2px solid #b5dcf5;
+      padding-bottom: 5px;
+    }
+
+    .soccer-accent {
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="your-profile.jpg" alt="Profile Picture">
+    <div>
+      <h1>Margoat</h1>
+      <p>Soccer & Creativity Enthusiast</p>
+    </div>
   </header>
 
-  <!-- About Section -->
-  <section class="p-6 max-w-2xl">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-2">About Me</h2>
-    <p class="text-gray-600 leading-relaxed">
-      Hi! I’m Margoat. I love soccer, pastel aesthetics, and building cool projects.  
-      This site is my little corner of the internet. ⚽✨
-    </p>
-  </section>
+  <main>
+    <h2>About Me</h2>
+    <p>Hello! I’m Margoat. Welcome to my personal site! I love soccer, design, and building fun projects.</p>
 
-  <!-- Soccer Divider -->
-  <div class="flex justify-center my-8">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg" 
-         alt="soccer ball" class="w-10 h-10 opacity-60">
-  </div>
-
-  <!-- Projects Section -->
-  <section class="p-6 max-w-2xl">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-2">Projects</h2>
-    <ul class="space-y-3 text-gray-700">
-      <li class="bg-white/70 rounded-xl p-4 shadow-md">⚽ Soccer Tracker App</li>
-      <li class="bg-white/70 rounded-xl p-4 shadow-md">🌸 Pastel Portfolio Design</li>
-      <li class="bg-white/70 rounded-xl p-4 shadow-md">💻 Open Source Contributions</li>
+    <h2>Projects</h2>
+    <ul>
+      <li>⚽ Soccer Blog</li>
+      <li>🌸 Pastel Design Portfolio</li>
+      <li>💻 Coding Experiments</li>
     </ul>
-  </section>
 
+    <p class="soccer-accent">⚽ “Play with passion, live with purpose.”</p>
+  </main>
 </body>
 </html>
