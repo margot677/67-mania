@@ -79,6 +79,14 @@
       color: #2a4d72;
       text-align: center;
     }
+
+    #gameCanvas {
+      display: block;
+      margin: 20px auto;
+      background: #d6efff;
+      border: 2px solid #3b6ea5;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -102,8 +110,83 @@
     </ul>
 
     <p class="soccer-accent">⚽ “Play with passion, live with purpose.”</p>
+
+    <h2>Mini Soccer Game</h2>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
   </main>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let ball = { x: 100, y: 200, r: 15, dx: 0, dy: 0 };
+    let goal = { x: 500, y: 150, w: 60, h: 100 };
+
+    let keys = {};
+
+    document.addEventListener("keydown", e => keys[e.key] = true);
+    document.addEventListener("keyup", e => keys[e.key] = false);
+
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fillStyle = "#3b6ea5";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawGoal() {
+      ctx.beginPath();
+      ctx.rect(goal.x, goal.y, goal.w, goal.h);
+      ctx.strokeStyle = "#2a4d72";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.closePath();
+    }
+
+    function updateBall() {
+      if (keys["ArrowUp"]) ball.dy = -2;
+      if (keys["ArrowDown"]) ball.dy = 2;
+      if (keys["ArrowLeft"]) ball.dx = -2;
+      if (keys["ArrowRight"]) ball.dx = 2;
+
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      // friction
+      ball.dx *= 0.9;
+      ball.dy *= 0.9;
+
+      // boundaries
+      if (ball.x - ball.r < 0) ball.x = ball.r;
+      if (ball.y - ball.r < 0) ball.y = ball.r;
+      if (ball.x + ball.r > canvas.width) ball.x = canvas.width - ball.r;
+      if (ball.y + ball.r > canvas.height) ball.y = canvas.height - ball.r;
+    }
+
+    function checkGoal() {
+      if (
+        ball.x > goal.x &&
+        ball.x < goal.x + goal.w &&
+        ball.y > goal.y &&
+        ball.y < goal.y + goal.h
+      ) {
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "#1f3c60";
+        ctx.fillText("GOAL!!! 🎉", canvas.width / 2 - 60, 50);
+      }
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGoal();
+      drawBall();
+      updateBall();
+      checkGoal();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
 </body>
 </html>
-
-
