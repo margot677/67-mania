@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: "Helvetica Neue", Arial, sans-serif;
-      background-color: #eaf6ff;
+      background-color: #eaf6ff; /* soft pastel blue background */
       color: #2c2c2c;
     }
 
@@ -80,11 +80,11 @@
       text-align: center;
     }
 
-    #gameCanvas {
+    canvas {
       display: block;
-      margin: 20px auto;
-      background: #d6efff;
-      border: 2px solid #3b6ea5;
+      margin: 30px auto;
+      background: #d9f1ff;
+      border: 3px solid #1f3c60;
       border-radius: 12px;
     }
   </style>
@@ -118,100 +118,121 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    let player = { x: 300, y: 200, r: 15, dx: 0, dy: 0, speed: 2.5 };
-    let goalie = { x: 40, y: 200, r: 15 };
-    let opponent = { x: 400, y: 200, r: 15, dx: 2, dy: 1.5 };
+    const ball = { x: 300, y: 200, size: 12, speed: 5 };
+    const goalie = { x: 560, y: 180, width: 20, height: 40, dir: 2 };
+    const defender = { x: 300, y: 100, size: 15, dir: 2 };
+    const nets = [
+      { x: 0, y: 150, width: 20, height: 100 },
+      { x: 580, y: 150, width: 20, height: 100 }
+    ];
+    let score = 0;
 
-    let leftGoal = { x: 10, y: 150, w: 20, h: 100 };
-    let rightGoal = { x: 570, y: 150, w: 20, h: 100 };
+    const keys = {};
 
-    let keys = {};
     document.addEventListener("keydown", e => keys[e.key] = true);
     document.addEventListener("keyup", e => keys[e.key] = false);
 
-    function drawPlayer(p, color) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.closePath();
-    }
-
-    function drawGoals() {
-      ctx.fillStyle = "#2a4d72";
-      ctx.fillRect(leftGoal.x, leftGoal.y, leftGoal.w, leftGoal.h);
-      ctx.fillRect(rightGoal.x, rightGoal.y, rightGoal.w, rightGoal.h);
-    }
-
-    function updatePlayer() {
-      if (keys["ArrowUp"]) player.dy = -player.speed;
-      if (keys["ArrowDown"]) player.dy = player.speed;
-      if (keys["ArrowLeft"]) player.dx = -player.speed;
-      if (keys["ArrowRight"]) player.dx = player.speed;
-
-      player.x += player.dx;
-      player.y += player.dy;
-
-      player.dx *= 0.8; // friction
-      player.dy *= 0.8;
+    function moveBall() {
+      if (keys["ArrowUp"]) ball.y -= ball.speed;
+      if (keys["ArrowDown"]) ball.y += ball.speed;
+      if (keys["ArrowLeft"]) ball.x -= ball.speed;
+      if (keys["ArrowRight"]) ball.x += ball.speed;
 
       // boundaries
-      if (player.x - player.r < 0) player.x = player.r;
-      if (player.y - player.r < 0) player.y = player.r;
-      if (player.x + player.r > canvas.width) player.x = canvas.width - player.r;
-      if (player.y + player.r > canvas.height) player.y = canvas.height - player.r;
-    }
-
-    function updateOpponent() {
-      opponent.x += opponent.dx;
-      opponent.y += opponent.dy;
-
-      if (opponent.x - opponent.r < 0 || opponent.x + opponent.r > canvas.width) opponent.dx *= -1;
-      if (opponent.y - opponent.r < 0 || opponent.y + opponent.r > canvas.height) opponent.dy *= -1;
+      if (ball.x < 0) ball.x = 0;
+      if (ball.y < 0) ball.y = 0;
+      if (ball.x > canvas.width - ball.size) ball.x = canvas.width - ball.size;
+      if (ball.y > canvas.height - ball.size) ball.y = canvas.height - ball.size;
     }
 
     function moveGoalie() {
-      // Goalie follows player’s Y
-      goalie.y += (player.y - goalie.y) * 0.05;
+      goalie.y += goalie.dir;
+      if (goalie.y <= 150 || goalie.y + goalie.height >= 250) {
+        goalie.dir *= -1;
+      }
     }
 
-    function checkGoals() {
-      if (
-        player.x > rightGoal.x &&
-        player.x < rightGoal.x + rightGoal.w &&
-        player.y > rightGoal.y &&
-        player.y < rightGoal.y + rightGoal.h
-      ) {
-        ctx.font = "24px Arial";
-        ctx.fillStyle = "blue";
-        ctx.fillText("GOAL for Margot! 🎉", 200, 50);
-      }
+    function moveDefender() {
+      defender.y += defender.dir;
+      if (defender.y <= 50 || defender.y >= 300) defender.dir *= -1;
+    }
 
+    function checkGoal() {
+      nets.forEach((net, i) => {
+        if (
+          ball.x < net.x + net.width &&
+          ball.x + ball.size > net.x &&
+          ball.y < net.y + net.height &&
+          ball.y + ball.size > net.y
+        ) {
+          if (i === 1) { // right net (with goalie)
+            if (
+              ball.x + ball.size > goalie.x &&
+              ball.y < goalie.y + goalie.height &&
+              ball.y + ball.size > goalie.y
+            ) {
+              // goalie blocked
+              return;
+            }
+          }
+          score++;
+          resetBall();
+        }
+      });
+    }
+
+    function checkCollision() {
       if (
-        player.x > leftGoal.x &&
-        player.x < leftGoal.x + leftGoal.w &&
-        player.y > leftGoal.y &&
-        player.y < leftGoal.y + leftGoal.h
+        ball.x < defender.x + defender.size &&
+        ball.x + ball.size > defender.x &&
+        ball.y < defender.y + defender.size &&
+        ball.y + ball.size > defender.y
       ) {
-        ctx.font = "24px Arial";
-        ctx.fillStyle = "red";
-        ctx.fillText("Opponent Scores! ❌", 200, 50);
+        resetBall();
       }
+    }
+
+    function resetBall() {
+      ball.x = 300;
+      ball.y = 200;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // nets
+      ctx.fillStyle = "#ffffff";
+      nets.forEach(net => ctx.fillRect(net.x, net.y, net.width, net.height));
+
+      // goalie
+      ctx.fillStyle = "#ff4444";
+      ctx.fillRect(goalie.x, goalie.y, goalie.width, goalie.height);
+
+      // defender
+      ctx.fillStyle = "#4444ff";
+      ctx.beginPath();
+      ctx.arc(defender.x, defender.y, defender.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ball
+      ctx.fillStyle = "#000000";
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      // score
+      ctx.fillStyle = "#1f3c60";
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 10, 20);
     }
 
     function gameLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      drawGoals();
-      drawPlayer(player, "#3b6ea5"); // blue = you
-      drawPlayer(goalie, "green");   // goalie
-      drawPlayer(opponent, "red");   // opponent
-
-      updatePlayer();
-      updateOpponent();
+      moveBall();
       moveGoalie();
-      checkGoals();
-
+      moveDefender();
+      checkGoal();
+      checkCollision();
+      draw();
       requestAnimationFrame(gameLoop);
     }
 
