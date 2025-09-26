@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +37,7 @@
     header p {
       margin: 4px 0 0;
       color: #385a7c;
+      font-weight: bold;
     }
 
     main {
@@ -55,10 +55,28 @@
       padding-bottom: 5px;
     }
 
+    ul.stats {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul.stats li {
+      background: #f4faff;
+      margin: 10px 0;
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+      color: #2a4d72;
+    }
+
     .soccer-accent {
       font-size: 1.2rem;
       margin-top: 20px;
       color: #2a4d72;
+      text-align: center;
     }
   </style>
 </head>
@@ -67,22 +85,22 @@
     <img src="your-profile.jpg" alt="Profile Picture">
     <div>
       <h1>Margot</h1>
-      <p>Soccer & Creativity Enthusiast</p>
+      <p>South Shore Select ECNL – Midfielder</p>
     </div>
   </header>
 
   <main>
-    <h2>About Me</h2>
-    <p>Hello! I’m Margot. Welcome to my personal site! I love soccer, design, and building fun projects.</p>
-
-    <h2>Projects</h2>
-    <ul>
-      <li>⚽ Soccer Blog</li>
-      <li>🌸 Pastel Design Portfolio</li>
-      <li>💻 Coding Experiments</li>
+    <h2>Soccer Stats</h2>
+    <ul class="stats">
+      <li><span>Games Played</span> <span>24</span></li>
+      <li><span>Goals</span> <span>10</span></li>
+      <li><span>Assists</span> <span>15</span></li>
+      <li><span>Pass Completion</span> <span>87%</span></li>
+      <li><span>Tackles Won</span> <span>42</span></li>
     </ul>
 
     <p class="soccer-accent">⚽ “Play with passion, live with purpose.”</p>
   </main>
 </body>
 </html>
+
