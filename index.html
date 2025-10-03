@@ -1,152 +1,181 @@
-<script>
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-
-  const player1 = { x: 100, y: 200, width: 20, height: 20, color: "#1f3c60" };
-  const player2 = { x: 480, y: 200, width: 20, height: 20, color: "#ff4444" };
-  const ball = { x: 300, y: 200, size: 10, dx: 0, dy: 0 };
-  const goalies = [
-    { x: 40, y: 170, width: 20, height: 60, dir: 2, color: "#888" },
-    { x: 540, y: 170, width: 20, height: 60, dir: 2, color: "#888" }
-  ];
-  const nets = [
-    { x: 0, y: 150, width: 20, height: 100 },
-    { x: 580, y: 150, width: 20, height: 100 }
-  ];
-  let score1 = 0, score2 = 0;
-
-  const keys = {};
-
-  // prevent page from scrolling with arrow keys
-  document.addEventListener("keydown", e => {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-      e.preventDefault();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Soccer Game</title>
+  <style>
+    body {
+      margin: 0;
+      background: #e8f0ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    keys[e.key] = true;
-  });
+    canvas {
+      border: 2px solid #000;
+      background: #4caf50;
+    }
+  </style>
+</head>
+<body>
+  <!-- Game canvas -->
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
 
-  document.addEventListener("keyup", e => {
-    keys[e.key] = false;
-  });
+  <!-- Game script -->
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-  function movePlayers() {
-    if (keys["ArrowUp"]) player1.y -= 5;
-    if (keys["ArrowDown"]) player1.y += 5;
-    if (keys["ArrowLeft"]) player1.x -= 5;
-    if (keys["ArrowRight"]) player1.x += 5;
+    const player1 = { x: 100, y: 200, width: 20, height: 20, color: "#1f3c60" };
+    const player2 = { x: 480, y: 200, width: 20, height: 20, color: "#ff4444" };
+    const ball = { x: 300, y: 200, size: 10, dx: 0, dy: 0 };
+    const goalies = [
+      { x: 40, y: 170, width: 20, height: 60, dir: 2, color: "#888" },
+      { x: 540, y: 170, width: 20, height: 60, dir: 2, color: "#888" }
+    ];
+    const nets = [
+      { x: 0, y: 150, width: 20, height: 100 },
+      { x: 580, y: 150, width: 20, height: 100 }
+    ];
+    let score1 = 0, score2 = 0;
 
-    // boundaries for players
-    player1.x = Math.max(0, Math.min(canvas.width - player1.width, player1.x));
-    player1.y = Math.max(0, Math.min(canvas.height - player1.height, player1.y));
-    player2.y += (ball.y > player2.y ? 2 : -2); // AI follow ball
-  }
+    const keys = {};
 
-  function moveBall() {
-    ball.x += ball.dx;
-    ball.y += ball.dy;
-    ball.dx *= 0.98;
-    ball.dy *= 0.98;
-
-    // bounce off walls
-    if (ball.x <= 0 || ball.x >= canvas.width - ball.size) ball.dx *= -1;
-    if (ball.y <= 0 || ball.y >= canvas.height - ball.size) ball.dy *= -1;
-  }
-
-  function moveGoalies() {
-    goalies.forEach(g => {
-      g.y += g.dir;
-      if (g.y <= 150 || g.y + g.height >= 250) g.dir *= -1;
-    });
-  }
-
-  function checkKick() {
-    if (keys["Enter"]) {
-      if (
-        ball.x < player1.x + player1.width &&
-        ball.x + ball.size > player1.x &&
-        ball.y < player1.y + player1.height &&
-        ball.y + ball.size > player1.y
-      ) {
-        ball.dx = 6;
-        ball.dy = (Math.random() - 0.5) * 6;
+    // prevent page from scrolling with arrow keys
+    document.addEventListener("keydown", e => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
       }
-    }
-  }
+      keys[e.key] = true;
+    });
 
-  function checkGoal() {
-    nets.forEach((net, i) => {
-      if (
-        ball.x < net.x + net.width &&
-        ball.x + ball.size > net.x &&
-        ball.y < net.y + net.height &&
-        ball.y + ball.size > net.y
-      ) {
-        // goalie check
-        const g = goalies[i];
+    document.addEventListener("keyup", e => {
+      keys[e.key] = false;
+    });
+
+    function movePlayers() {
+      if (keys["ArrowUp"]) player1.y -= 5;
+      if (keys["ArrowDown"]) player1.y += 5;
+      if (keys["ArrowLeft"]) player1.x -= 5;
+      if (keys["ArrowRight"]) player1.x += 5;
+
+      // boundaries for players
+      player1.x = Math.max(0, Math.min(canvas.width - player1.width, player1.x));
+      player1.y = Math.max(0, Math.min(canvas.height - player1.height, player1.y));
+
+      // AI follow ball
+      player2.y += (ball.y > player2.y ? 2 : -2);
+    }
+
+    function moveBall() {
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+      ball.dx *= 0.98;
+      ball.dy *= 0.98;
+
+      // bounce off walls
+      if (ball.x <= 0 || ball.x >= canvas.width - ball.size) ball.dx *= -1;
+      if (ball.y <= 0 || ball.y >= canvas.height - ball.size) ball.dy *= -1;
+    }
+
+    function moveGoalies() {
+      goalies.forEach(g => {
+        g.y += g.dir;
+        if (g.y <= 150 || g.y + g.height >= 250) g.dir *= -1;
+      });
+    }
+
+    function checkKick() {
+      if (keys["Enter"]) {
         if (
-          ball.x + ball.size > g.x &&
-          ball.x < g.x + g.width &&
-          ball.y + ball.size > g.y &&
-          ball.y < g.y + g.height
+          ball.x < player1.x + player1.width &&
+          ball.x + ball.size > player1.x &&
+          ball.y < player1.y + player1.height &&
+          ball.y + ball.size > player1.y
         ) {
-          return; // blocked
+          ball.dx = 6;
+          ball.dy = (Math.random() - 0.5) * 6;
         }
-        if (i === 0) score2++;
-        else score1++;
-        resetBall();
       }
-    });
-  }
+    }
 
-  function resetBall() {
-    ball.x = 300;
-    ball.y = 200;
-    ball.dx = 0;
-    ball.dy = 0;
-  }
+    function checkGoal() {
+      nets.forEach((net, i) => {
+        if (
+          ball.x < net.x + net.width &&
+          ball.x + ball.size > net.x &&
+          ball.y < net.y + net.height &&
+          ball.y + ball.size > net.y
+        ) {
+          // goalie check
+          const g = goalies[i];
+          if (
+            ball.x + ball.size > g.x &&
+            ball.x < g.x + g.width &&
+            ball.y + ball.size > g.y &&
+            ball.y < g.y + g.height
+          ) {
+            return; // blocked
+          }
+          if (i === 0) score2++;
+          else score1++;
+          resetBall();
+        }
+      });
+    }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function resetBall() {
+      ball.x = 300;
+      ball.y = 200;
+      ball.dx = 0;
+      ball.dy = 0;
+    }
 
-    // nets
-    ctx.fillStyle = "#ffffff";
-    nets.forEach(net => ctx.fillRect(net.x, net.y, net.width, net.height));
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // goalies
-    goalies.forEach(g => {
-      ctx.fillStyle = g.color;
-      ctx.fillRect(g.x, g.y, g.width, g.height);
-    });
+      // nets
+      ctx.fillStyle = "#ffffff";
+      nets.forEach(net => ctx.fillRect(net.x, net.y, net.width, net.height));
 
-    // players
-    ctx.fillStyle = player1.color;
-    ctx.fillRect(player1.x, player1.y, player1.width, player1.height);
+      // goalies
+      goalies.forEach(g => {
+        ctx.fillStyle = g.color;
+        ctx.fillRect(g.x, g.y, g.width, g.height);
+      });
 
-    ctx.fillStyle = player2.color;
-    ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
+      // players
+      ctx.fillStyle = player1.color;
+      ctx.fillRect(player1.x, player1.y, player1.width, player1.height);
 
-    // ball
-    ctx.fillStyle = "#000";
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
-    ctx.fill();
+      ctx.fillStyle = player2.color;
+      ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
 
-    // score
-    ctx.fillStyle = "#1f3c60";
-    ctx.font = "20px Arial";
-    ctx.fillText("Player 1: " + score1, 20, 20);
-    ctx.fillText("Player 2: " + score2, 460, 20);
-  }
+      // ball
+      ctx.fillStyle = "#000";
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
+      ctx.fill();
 
-  function gameLoop() {
-    movePlayers();
-    moveBall();
-    moveGoalies();
-    checkKick();
-    checkGoal();
-    draw();
-    requestAnimationFrame(gameLoop);
-  }
+      // score
+      ctx.fillStyle = "#1f3c60";
+      ctx.font = "20px Arial";
+      ctx.fillText("Player 1: " + score1, 20, 20);
+      ctx.fillText("Player 2: " + score2, 460, 20);
+    }
 
-  gameLoop();
-</script>
+    function gameLoop() {
+      movePlayers();
+      moveBall();
+      moveGoalies();
+      checkKick();
+      checkGoal();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
